@@ -79,11 +79,6 @@ async function run() {
       const result = await data.toArray();
       res.send(result);
     });
-    app.get("/user/:email", async (req, res) => {
-      const email = req.params.email;
-      const result = await user.findOne({email });
-      res.send(result);
-    });
 
     app.post("/user", async (req, res) => {
       const data = req.body;
@@ -94,13 +89,19 @@ async function run() {
       const result = await user.insertOne(data);
       res.send(result);
     });
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await user.findOne({ email });
+      res.send(result);
+    });
 
     app.patch("/user/:email", async (req, res) => {
       const email = req.params.email;
       const updateData = req.body;
-      const result = await news.updateOne(
-        { email: email },
-        { $set: updateData }
+      const result = await user.updateOne(
+        { email },
+        { $set: updateData },
+        { upsert: true }
       );
       res.send(result);
     });
