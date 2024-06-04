@@ -3,15 +3,14 @@ const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
-require('dotenv').config()
-
+require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
 
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(process.env.URI, {
+const uri =
+  "mongodb+srv://mhfaryanemon:1234567890@cluster0.tph3j8f.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -83,6 +82,16 @@ async function run() {
     app.post("/user", async (req, res) => {
       const data = req.body;
       const result = await user.insertOne(data);
+      res.send(result);
+    });
+
+    app.patch("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const result = await news.updateOne(
+        { email: email },
+        { $set: updateData }
+      );
       res.send(result);
     });
 
