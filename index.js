@@ -79,8 +79,18 @@ async function run() {
       const result = await data.toArray();
       res.send(result);
     });
+    app.get("/news/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usar.findOne({ email: email });
+      res.send(result);
+    });
+
     app.post("/user", async (req, res) => {
       const data = req.body;
+      const itUserExist = await user.findOne({ email: user?.email });
+      if (itUserExist?._id) {
+        return res.send("Login success");
+      }
       const result = await user.insertOne(data);
       res.send(result);
     });
