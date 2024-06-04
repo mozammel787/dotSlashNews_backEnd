@@ -95,8 +95,8 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/user/:id", async (req, res) => {
-      const id = req.params.id;
+    app.patch("/user/:email", async (req, res) => {
+      const email = req.params.email;
       const updateData = req.body;
       const result = await news.updateOne(
         { email: email },
