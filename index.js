@@ -81,7 +81,7 @@ async function run() {
     });
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
-      const result = await usar.findOne({ email: email });
+      const result = await usar.findOne({email });
       res.send(result);
     });
 
