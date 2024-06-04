@@ -79,7 +79,7 @@ async function run() {
       const result = await data.toArray();
       res.send(result);
     });
-    app.get("/news/:email", async (req, res) => {
+    app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
       const result = await usar.findOne({ email: email });
       res.send(result);
