@@ -17,14 +17,15 @@ function createToken(user) {
     "secret",
     { expiresIn: "7d" }
   );
+
   return token;
 }
+
 function verifyToken(req, res, next) {
-  const authToken = req.headers.authorization.split(" ")[1];
-  const verify = jwt.verify(token, "secret", function (err, decoded) {
-    console.log(verify); // bar
-  });
-  if (verify?.email) {
+  const token = req.headers.authorization.split(" ")[1];
+  const verify = jwt.verify(token, "secret");
+
+  if (!verify?.email) {
     return res.send(" You are not authorized");
   }
   req.user = verify.email;
@@ -63,12 +64,12 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/news/add-post", async (req, res) => {
+    app.post("/news/add-post",verifyToken, async (req, res) => {
       const data = req.body;
       const result = await news.insertOne(data);
       res.send(result);
     });
-    app.delete("/news/delete-post/:id", async (req, res) => {
+    app.delete("/news/delete-post/:id",verifyToken, async (req, res) => {
       const id = req.params.id;
       const result = await news.deleteOne({ _id: new ObjectId(id) });
       res.send(result);
@@ -106,7 +107,8 @@ async function run() {
 
     app.post("/user", async (req, res) => {
       const data = req.body;
-      const token = createToken(user);
+      const token = createToken(data);
+
       const itUserExist = await user.findOne({ email: user?.email });
       if (itUserExist?._id) {
         return res.send({
@@ -115,7 +117,6 @@ async function run() {
       }
       await user.insertOne(data);
       res.send(token);
-      console.log(token);
     });
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
@@ -123,7 +124,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/user/:email", async (req, res) => {
+    app.patch("/user/:email", verifyToken,async (req, res) => {
       const email = req.params.email;
       const updateData = req.body;
       const result = await user.updateOne(
