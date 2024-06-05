@@ -33,9 +33,8 @@ function verifyToken(req, res, next) {
   next();
 }
 
-const uri =
-  "mongodb+srv://mhfaryanemon:1234567890@cluster0.tph3j8f.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const client = new MongoClient(uri, {
+
+const client = new MongoClient(process.env.URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
