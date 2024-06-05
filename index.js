@@ -54,7 +54,7 @@ async function run() {
 
     app.get("/news", async (req, res) => {
       const data = news.find();
-      const result = await data.sort({ "advertisementTime": -1 }).toArray();
+      const result = await data.sort({ "publishedAt": -1 }).toArray();
       res.send(result);
     });
 
