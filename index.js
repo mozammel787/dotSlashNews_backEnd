@@ -86,7 +86,7 @@ async function run() {
 
     app.get("/news/my-post/:id", async (req, res) => {
       const email = req.params.id;
-      const result = await news.find({ email: email }).toArray();
+      const result = await news.find({ authorEmail: email }).toArray();
       res.send(result);
     });
 
