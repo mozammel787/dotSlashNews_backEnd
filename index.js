@@ -3,10 +3,34 @@ const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
+
+function createToken(user) {
+  const token = jwt.sign(
+    {
+      email: user.email,
+    },
+    "secret",
+    { expiresIn: "7d" }
+  );
+  return token;
+}
+function verifyToken(req, res, next) {
+  const authToken = req.headers.authorization.split(" ")[1];
+  const verify = jwt.verify(token, "secret", function (err, decoded) {
+    console.log(verify); // bar
+  });
+  if (verify?.email) {
+    return res.send(" You are not authorized");
+  }
+  req.user = verify.email;
+
+  next();
+}
 
 const uri =
   "mongodb+srv://mhfaryanemon:1234567890@cluster0.tph3j8f.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -50,7 +74,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/news/edit-post/:id", async (req, res) => {
+    app.patch("/news/edit-post/:id", verifyToken, async (req, res) => {
       const id = req.params.id;
       const updateData = req.body;
       const result = await news.updateOne(
@@ -62,7 +86,7 @@ async function run() {
 
     app.get("/news/my-post/:id", async (req, res) => {
       const email = req.params.id;
-      const result = await news.find({ author: email }).toArray();
+      const result = await news.find({ email: email }).toArray();
       res.send(result);
     });
 
@@ -82,12 +106,16 @@ async function run() {
 
     app.post("/user", async (req, res) => {
       const data = req.body;
+      const token = createToken(user);
       const itUserExist = await user.findOne({ email: user?.email });
       if (itUserExist?._id) {
-        return res.send("Login success");
+        return res.send({
+          token,
+        });
       }
-      const result = await user.insertOne(data);
-      res.send(result);
+      await user.insertOne(data);
+      res.send(token);
+      console.log(token);
     });
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
