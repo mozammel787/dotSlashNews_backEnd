@@ -84,8 +84,8 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/news/my-post/:id", async (req, res) => {
-      const email = req.params.id;
+    app.get("/news/my-post/:email", async (req, res) => {
+      const email = req.params.email;
       const result = await news.find({ authorEmail: email }).toArray();
       res.send(result);
     });
