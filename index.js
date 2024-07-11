@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 app.use(cors());
@@ -142,9 +142,9 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get("/", (req, res) => {
-  res.send("it's work");
-});
-app.listen(port, (req, res) => {
-  console.log(port);
-});
+app.get('/', async (req, res) => {
+  res.send('server is running')
+})
+app.listen(port, () => {
+  console.log(`running port is ${port}`)
+})
