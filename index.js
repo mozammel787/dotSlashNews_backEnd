@@ -49,147 +49,102 @@ async function run() {
     const news = database.collection("news");
     const user = database.collection("user");
 
-    // News
+    //   News
 
     app.get("/news", async (req, res) => {
-      try {
-        const data = news.find();
-        const result = await data.sort({ "publishedAt": -1 }).toArray();
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error retrieving news");
-      }
+      const data = news.find();
+      const result = await data.sort({ "publishedAt": -1 }).toArray();
+      res.send(result);
     });
 
     app.get("/news/:id", async (req, res) => {
-      try {
-        const id = req.params.id;
-        const result = await news.findOne({ _id: new ObjectId(id) });
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error retrieving news item");
-      }
+      const id = req.params.id;
+      const result = await news.findOne({ _id: new ObjectId(id) });
+      res.send(result);
     });
 
-    app.post("/news/add-post", verifyToken, async (req, res) => {
-      try {
-        const data = req.body;
-        const result = await news.insertOne(data);
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error adding news post");
-      }
+    app.post("/news/add-post",verifyToken, async (req, res) => {
+      const data = req.body;
+      const result = await news.insertOne(data);
+      res.send(result);
     });
-
-    app.delete("/news/delete-post/:id", verifyToken, async (req, res) => {
-      try {
-        const id = req.params.id;
-        const result = await news.deleteOne({ _id: new ObjectId(id) });
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error deleting news post");
-      }
+    app.delete("/news/delete-post/:id",verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const result = await news.deleteOne({ _id: new ObjectId(id) });
+      res.send(result);
     });
 
     app.patch("/news/edit-post/:id", verifyToken, async (req, res) => {
-      try {
-        const id = req.params.id;
-        const updateData = req.body;
-        const result = await news.updateOne(
-          { _id: new ObjectId(id) },
-          { $set: updateData }
-        );
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error editing news post");
-      }
+      const id = req.params.id;
+      const updateData = req.body;
+      const result = await news.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updateData }
+      );
+      res.send(result);
     });
 
     app.get("/news/my-post/:email", async (req, res) => {
-      try {
-        const email = req.params.email;
-        const result = await news.find({ authorEmail: email }).toArray();
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error retrieving user's posts");
-      }
+      const email = req.params.email;
+      const result = await news.find({ authorEmail: email }).toArray();
+      res.send(result);
     });
 
-    app.get("/news/category/:category", async (req, res) => {
-      try {
-        const category = req.params.category;
-        const result = await news.find({ category: category }).toArray();
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error retrieving news by category");
-      }
+    app.get("/news/catagory/:catagory", async (req, res) => {
+      const catagory = req.params.catagory;
+      const result = await news.find({ catagory: catagory }).toArray();
+      res.send(result);
     });
 
-    // User
+    // user
 
     app.get("/user", async (req, res) => {
-      try {
-        const data = user.find();
-        const result = await data.toArray();
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error retrieving users");
-      }
+      const data = user.find();
+      const result = await data.toArray();
+      res.send(result);
     });
 
     app.post("/user", async (req, res) => {
-      try {
-        const data = req.body;
-        const token = createToken(data);
+      const data = req.body;
+      const token = createToken(data);
 
-        const itUserExist = await user.findOne({ email: data.email });
-        if (itUserExist?._id) {
-          return res.send({ token });
-        }
-        await user.insertOne(data);
-        res.send({ token });
-      } catch (error) {
-        res.status(500).send("Error adding user");
+      const itUserExist = await user.findOne({ email: user?.email });
+      if (itUserExist?._id) {
+        return res.send({
+          token,
+        });
       }
+      await user.insertOne(data);
+      res.send(token);
     });
-
     app.get("/user/:email", async (req, res) => {
-      try {
-        const email = req.params.email;
-        const result = await user.findOne({ email });
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error retrieving user");
-      }
+      const email = req.params.email;
+      const result = await user.findOne({ email });
+      res.send(result);
     });
 
-    app.patch("/user/:email", verifyToken, async (req, res) => {
-      try {
-        const email = req.params.email;
-        const updateData = req.body;
-        const result = await user.updateOne(
-          { email },
-          { $set: updateData },
-          { upsert: true }
-        );
-        res.send(result);
-      } catch (error) {
-        res.status(500).send("Error updating user");
-      }
+    app.patch("/user/:email", verifyToken,async (req, res) => {
+      const email = req.params.email;
+      const updateData = req.body;
+      const result = await user.updateOne(
+        { email },
+        { $set: updateData },
+        { upsert: true }
+      );
+      res.send(result);
     });
 
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } catch (error) {
-    console.error("Failed to connect to MongoDB", error);
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
+  } finally {
   }
 }
-
 run().catch(console.dir);
 
-app.get('/', (req, res) => {
-  res.send('server is running');
-});
-
+app.get('/', async (req, res) => {
+  res.send('server is running')
+})
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+  console.log(`running port is ${port}`)
+})
