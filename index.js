@@ -102,7 +102,7 @@ async function run() {
     app.get("/user", async (req, res) => {
       const data = user.find();
       const result = await data.toArray();
-      // console.log(result);
+      console.log(result);
       res.send(result);
     });
 
