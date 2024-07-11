@@ -22,25 +22,17 @@ function createToken(user) {
 }
 
 function verifyToken(req, res, next) {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).send("Authorization header missing");
-    }
+  const token = req.headers.authorization.split(" ")[1];
+  const verify = jwt.verify(token, "secret");
 
-    const token = authHeader.split(" ")[1];
-    const verify = jwt.verify(token, process.env.JWT_SECRET || "default_secret");
-
-    if (!verify?.email) {
-      return res.status(401).send("You are not authorized");
-    }
-    req.user = verify.email;
-
-    next();
-  } catch (error) {
-    return res.status(401).send("Invalid or expired token");
+  if (!verify?.email) {
+    return res.send(" You are not authorized");
   }
+  req.user = verify.email;
+
+  next();
 }
+
 
 const client = new MongoClient(process.env.URI, {
   serverApi: {
