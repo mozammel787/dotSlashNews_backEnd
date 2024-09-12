@@ -11,19 +11,16 @@ app.use(cors());
 app.use(express.json());
 
 function createToken(user) {
-  const token = jwt.sign(
+  return jwt.sign(
     { email: user.email },
     process.env.JWT_SECRET || "your-secret-key",
     { expiresIn: "7d" }
   );
-  return token;
 }
 
 function verifyToken(req, res, next) {
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).send("Token is missing");
-  }
+  if (!authHeader) return res.status(401).send("Token is missing");
   
   const token = authHeader.split(" ")[1];
   try {
@@ -31,7 +28,8 @@ function verifyToken(req, res, next) {
     req.user = decoded.email;
     next();
   } catch (err) {
-    return res.status(401).send("Invalid token");
+    console.error("Token verification failed:", err);
+    res.status(401).send("Invalid token");
   }
 }
 
@@ -50,12 +48,12 @@ async function run() {
     const news = database.collection("news");
     const user = database.collection("user");
 
-    // News routes
     app.get("/news", async (req, res) => {
       try {
         const result = await news.find().sort({ publishedAt: -1 }).toArray();
         res.send(result);
       } catch (err) {
+        console.error("Error fetching news:", err);
         res.status(500).send("Error fetching news");
       }
     });
@@ -66,6 +64,7 @@ async function run() {
         const result = await news.findOne({ _id: id });
         res.send(result);
       } catch (err) {
+        console.error("Error fetching news by ID:", err);
         res.status(500).send("Error fetching news by ID");
       }
     });
@@ -75,6 +74,7 @@ async function run() {
         const result = await news.insertOne(req.body);
         res.send(result);
       } catch (err) {
+        console.error("Error adding news post:", err);
         res.status(500).send("Error adding news post");
       }
     });
@@ -85,6 +85,7 @@ async function run() {
         const result = await news.deleteOne({ _id: id });
         res.send(result);
       } catch (err) {
+        console.error("Error deleting news post:", err);
         res.status(500).send("Error deleting news post");
       }
     });
@@ -98,6 +99,7 @@ async function run() {
         );
         res.send(result);
       } catch (err) {
+        console.error("Error updating news post:", err);
         res.status(500).send("Error updating news post");
       }
     });
@@ -107,6 +109,7 @@ async function run() {
         const result = await news.find({ authorEmail: req.params.email }).toArray();
         res.send(result);
       } catch (err) {
+        console.error("Error fetching user's posts:", err);
         res.status(500).send("Error fetching user's posts");
       }
     });
@@ -116,16 +119,17 @@ async function run() {
         const result = await news.find({ category: req.params.category }).toArray();
         res.send(result);
       } catch (err) {
+        console.error("Error fetching news by category:", err);
         res.status(500).send("Error fetching news by category");
       }
     });
 
-    // User routes
     app.get("/user", async (req, res) => {
       try {
         const result = await user.find().toArray();
         res.send(result);
       } catch (err) {
+        console.error("Error fetching users:", err);
         res.status(500).send("Error fetching users");
       }
     });
@@ -143,6 +147,7 @@ async function run() {
         await user.insertOne(data);
         res.send({ token });
       } catch (err) {
+        console.error("Error creating user:", err);
         res.status(500).send("Error creating user");
       }
     });
@@ -152,6 +157,7 @@ async function run() {
         const result = await user.findOne({ email: req.params.email });
         res.send(result);
       } catch (err) {
+        console.error("Error fetching user by email:", err);
         res.status(500).send("Error fetching user by email");
       }
     });
@@ -165,13 +171,17 @@ async function run() {
         );
         res.send(result);
       } catch (err) {
+        console.error("Error updating user:", err);
         res.status(500).send("Error updating user");
       }
     });
 
     console.log("Connected to MongoDB!");
+  } catch (err) {
+    console.error("Error connecting to MongoDB:", err);
   } finally {
-   
+    // Ensure the client is closed properly (if required)
+    // await client.close();
   }
 }
 
