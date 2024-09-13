@@ -33,7 +33,7 @@ function verifyToken(req, res, next) {
   }
 }
 
-const client = new MongoClient(process.env.MONGO_URI, {
+const client = new MongoClient(process.env.URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
