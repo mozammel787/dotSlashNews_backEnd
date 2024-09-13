@@ -41,11 +41,11 @@ Dot Slash News is a full-stack news portal web application built using the MERN 
 
 ## Code Philosophy
 
-The codebase is designed to be simple and human-readable, ensuring that developers of all skill levels can understand and contribute effectively.
+The codebase is designed to be simple and human-readable, ensuring developers of all skill levels can understand and contribute effectively.
 
 ## Packages List
 
-version: 0.1.0
+version: 1.0.0
 
 ```json
 {
