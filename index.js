@@ -180,8 +180,7 @@ async function run() {
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
   } finally {
-    // Ensure the client is closed properly (if required)
-    // await client.close();
+    
   }
 }
 
