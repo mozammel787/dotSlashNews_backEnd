@@ -180,7 +180,7 @@ async function run() {
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
   } finally {
-    
+    // console.log()
   }
 }
 
